@@ -7,21 +7,22 @@ import styles from './page.module.css'
 
 const slides = [
   {
-    title: "Unified Portfolio",
-    description: "Oversee your entire digital asset collection, from Bitcoin to the latest DeFi tokens, in one streamlined interface."
+    title: "Unified Calendar",
+    description: "Oversee your entire digital calendar, from resting time to the latest appointments, in one streamlined interface."
   },
   {
-    title: "Fortified Security",
-    description: "Your peace of mind is our priority. Your assets are secured with multi-layered, audited protection."
+    title: "Simple to use",
+    description: "Managing your schedule is effortless with our intuitive calendar. Stay organized and stress-free every day."
   },
   {
-    title: "Effortless DeFi",
-    description: "Connect to the decentralized ecosystem with a single click. Swap, stake, and earn with confidence and simplicity."
+    title: "Effortless Calendar",
+    description: "Connect your calendar by speaking with a command. Sync, schedule, and manage with confidence and simplicity."
   }
 ];
 
 export default function Home() {
   const [showBackToTop, setShowBackToTop] = useState(false)
+  const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 })
   const { scrollY } = useScroll()
   const y2 = useTransform(scrollY, [0, 300], [0, -100])
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -42,6 +43,16 @@ export default function Home() {
 
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+
+  // Custom cursor tracking
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      setCursorPosition({ x: e.clientX, y: e.clientY })
+    }
+
+    window.addEventListener('mousemove', handleMouseMove)
+    return () => window.removeEventListener('mousemove', handleMouseMove)
   }, [])
 
   const scrollToSection = (sectionId: string) => {
@@ -93,6 +104,15 @@ export default function Home() {
   }
   return (
     <>
+      {/* Custom RGB Cursor */}
+      <div
+        className="cursor"
+        style={{
+          left: `${cursorPosition.x - 10}px`,
+          top: `${cursorPosition.y - 10}px`,
+        }}
+      />
+
       <Head>
         <script
           type="application/ld+json"
@@ -132,8 +152,8 @@ export default function Home() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.4 }}
             >
-              Your Assets, Your Control.
-              <span className={styles.heroHighlight}> The Premier Smart Wallet.</span>
+              Your Tempo, Your Control.
+              <span className={styles.heroHighlight}> The Elite Productivity Planner</span>
             </motion.h1>
 
             <motion.p
@@ -142,8 +162,7 @@ export default function Home() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.6 }}
             >
-              SmartWallet offers unparalleled security and seamless access to the decentralized web. 
-              Manage your portfolio across 150+ blockchains with institutional-grade protection.
+              Calendar Idea keeps you organized and boosts your productivity every day.
             </motion.p>
           </motion.div>
 
@@ -155,7 +174,8 @@ export default function Home() {
             transition={{ duration: 1.2, delay: 1.0, type: "spring", stiffness: 100 }}
           >
             <div className={styles.centerLogoCircle}>
-              <span className={styles.centerLogoText}>SW</span>
+              <div className={styles.centerBlocker}></div>
+              <span className={styles.centerLogoText}>CI</span>
               <div className={styles.centerLogoGlow}></div>
             </div>
           </motion.div>

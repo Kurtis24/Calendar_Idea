@@ -4,12 +4,13 @@
   box-sizing: border-box;
   padding: 0;
   margin: 0;
+  cursor: none;
 }
 
 :root {
-  --dark-navy: #111111;
-  --dark-blue: #1C1C1C;
-  --card-dark: #111111;
+  --dark-navy: #000000;
+  --dark-blue: #0A0A0A;
+  --card-dark: #000000;
   --accent-purple: #A78BFA;
   --accent-blue: #60A5FA;
   --accent-green: #34D399;
@@ -38,14 +39,57 @@
 
 html {
   font-family: 'Inter', system-ui, sans-serif;
+  background: #000000;
+  height: 100%;
 }
 
 body {
   background: linear-gradient(180deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
   color: var(--text-primary);
   min-height: 100vh;
+  height: 100%;
   font-family: 'Inter', system-ui, sans-serif;
   transition: background 0.3s ease, color 0.3s ease;
+  cursor: none;
+}
+
+/* Custom Tri-Color Cursor */
+.cursor {
+  position: fixed;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: radial-gradient(circle,
+    rgba(239, 68, 68, 0.9) 0%,
+    rgba(139, 92, 246, 0.7) 50%,
+    rgba(30, 58, 138, 0.5) 100%);
+  pointer-events: none;
+  z-index: 9999;
+  filter: blur(3px);
+  box-shadow:
+    0 0 15px rgba(239, 68, 68, 0.7),
+    0 0 30px rgba(139, 92, 246, 0.5),
+    0 0 45px rgba(30, 58, 138, 0.4),
+    0 0 60px rgba(239, 68, 68, 0.3);
+}
+@keyframes triColorPulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* Component Styles */
@@ -60,7 +104,6 @@ body {
   transform: scale(1);
   box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
   border: none;
-  cursor: pointer;
 }
 
 .btn-primary:hover {
@@ -78,7 +121,6 @@ body {
   font-size: 1.125rem;
   border: 1px solid var(--border-color);
   transition: all 0.3s;
-  cursor: pointer;
 }
 
 .btn-secondary:hover {
