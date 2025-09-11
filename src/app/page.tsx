@@ -26,12 +26,75 @@ export default function Home() {
   const { scrollY } = useScroll()
   const y2 = useTransform(scrollY, [0, 300], [0, -100])
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+  const [touchStart, setTouchStart] = useState(0);
+  const [touchEnd, setTouchEnd] = useState(0);
 
+  // Auto-play slideshow
   useEffect(() => {
+    if (!isAutoPlaying) return;
+
     const interval = setInterval(() => {
       setCurrentSlide(prev => (prev + 1) % slides.length);
     }, 4000);
     return () => clearInterval(interval);
+  }, [isAutoPlaying]);
+
+  // Handle manual navigation
+  const goToSlide = (index: number) => {
+    setCurrentSlide(index);
+    setIsAutoPlaying(false); // Pause auto-play when user interacts
+    // Resume auto-play after 10 seconds of inactivity
+    setTimeout(() => setIsAutoPlaying(true), 10000);
+  };
+
+  const nextSlide = () => {
+    setCurrentSlide(prev => (prev + 1) % slides.length);
+    setIsAutoPlaying(false);
+    setTimeout(() => setIsAutoPlaying(true), 10000);
+  };
+
+  const prevSlide = () => {
+    setCurrentSlide(prev => (prev - 1 + slides.length) % slides.length);
+    setIsAutoPlaying(false);
+    setTimeout(() => setIsAutoPlaying(true), 10000);
+  };
+
+  // Touch handlers for mobile swipe
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > 50;
+    const isRightSwipe = distance < -50;
+
+    if (isLeftSwipe) {
+      nextSlide();
+    } else if (isRightSwipe) {
+      prevSlide();
+    }
+  };
+
+  // Keyboard navigation
+  useEffect(() => {
+    const handleKeyPress = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowLeft') {
+        prevSlide();
+      } else if (e.key === 'ArrowRight') {
+        nextSlide();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
   }, []);
 
   // Track active section and back to top button
@@ -175,12 +238,43 @@ export default function Home() {
           >
             <div className={styles.centerLogoCircle}>
               <div className={styles.centerBlocker}></div>
-              <span className={styles.centerLogoText}>CI</span>
+              <span className={styles.centerLogoText}>Steady</span>
               <div className={styles.centerLogoGlow}></div>
             </div>
           </motion.div>
 
-          <div className={styles.slideshowContainer}>
+          <div
+            className={styles.slideshowContainer}
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+          >
+            {/* Navigation Arrows */}
+            <motion.button
+              className={`${styles.navArrow} ${styles.leftArrow}`}
+              onClick={prevSlide}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              initial={{ opacity: 0.7 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.3 }}
+            >
+              ‹
+            </motion.button>
+
+            <motion.button
+              className={`${styles.navArrow} ${styles.rightArrow}`}
+              onClick={nextSlide}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              initial={{ opacity: 0.7 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.3 }}
+            >
+              ›
+            </motion.button>
+
+            {/* Main Slide Content */}
             <AnimatePresence mode="wait">
               <motion.div
                 key={currentSlide}
@@ -194,6 +288,35 @@ export default function Home() {
                 <p>{slides[currentSlide].description}</p>
               </motion.div>
             </AnimatePresence>
+
+            {/* Slide Indicators */}
+            <div className={styles.slideIndicators}>
+              {slides.map((_, index) => (
+                <motion.button
+                  key={index}
+                  className={`${styles.indicator} ${index === currentSlide ? styles.active : ''}`}
+                  onClick={() => goToSlide(index)}
+                  whileHover={{ scale: 1.2 }}
+                  whileTap={{ scale: 0.8 }}
+                  animate={{
+                    scale: index === currentSlide ? 1.1 : 1,
+                    backgroundColor: index === currentSlide ? 'var(--accent-purple)' : 'rgba(255, 255, 255, 0.3)'
+                  }}
+                  transition={{ duration: 0.3 }}
+                />
+              ))}
+            </div>
+
+            {/* Auto-play Indicator */}
+            <motion.div
+              className={styles.autoPlayIndicator}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: isAutoPlaying ? 0.6 : 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              <div className={styles.autoPlayDot} />
+              <span>Auto-playing</span>
+            </motion.div>
           </div>
         </div>
       </section>
