@@ -1,101 +1,57 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
-import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion'
+import React, { useState, useEffect, Suspense } from 'react'
+import { motion, useScroll, useTransform } from 'framer-motion'
 import Head from 'next/head'
 import styles from './page.module.css'
-
-const slides = [
-  {
-    title: "Unified Calendar",
-    description: "Oversee your entire digital calendar, from resting time to the latest appointments, in one streamlined interface."
-  },
-  {
-    title: "Simple to use",
-    description: "Managing your schedule is effortless with our intuitive calendar. Stay organized and stress-free every day."
-  },
-  {
-    title: "Effortless Calendar",
-    description: "Connect your calendar by speaking with a command. Sync, schedule, and manage with confidence and simplicity."
-  }
-];
+import { Canvas } from '@react-three/fiber'
+import { OrbitControls } from '@react-three/drei'
+import ParticleSphere from '../components/ParticleSphere'
+import { supabase } from '../lib/supabase'
 
 export default function Home() {
   const [showBackToTop, setShowBackToTop] = useState(false)
   const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 })
   const { scrollY } = useScroll()
   const y2 = useTransform(scrollY, [0, 300], [0, -100])
-  const [currentSlide, setCurrentSlide] = useState(0);
-  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
-  const [touchStart, setTouchStart] = useState(0);
-  const [touchEnd, setTouchEnd] = useState(0);
+  const [email, setEmail] = useState('');
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  // Auto-play slideshow
-  useEffect(() => {
-    if (!isAutoPlaying) return;
+  // Handle email signup
+  const handleEmailSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (email) {
+      setIsLoading(true);
+      setError('');
 
-    const interval = setInterval(() => {
-      setCurrentSlide(prev => (prev + 1) % slides.length);
-    }, 4000);
-    return () => clearInterval(interval);
-  }, [isAutoPlaying]);
+      try {
+        const { data, error } = await supabase
+          .from('waitlist')
+          .insert([
+            { email: email, created_at: new Date().toISOString() }
+          ])
 
-  // Handle manual navigation
-  const goToSlide = (index: number) => {
-    setCurrentSlide(index);
-    setIsAutoPlaying(false); // Pause auto-play when user interacts
-    // Resume auto-play after 10 seconds of inactivity
-    setTimeout(() => setIsAutoPlaying(true), 10000);
-  };
-
-  const nextSlide = () => {
-    setCurrentSlide(prev => (prev + 1) % slides.length);
-    setIsAutoPlaying(false);
-    setTimeout(() => setIsAutoPlaying(true), 10000);
-  };
-
-  const prevSlide = () => {
-    setCurrentSlide(prev => (prev - 1 + slides.length) % slides.length);
-    setIsAutoPlaying(false);
-    setTimeout(() => setIsAutoPlaying(true), 10000);
-  };
-
-  // Touch handlers for mobile swipe
-  const handleTouchStart = (e: React.TouchEvent) => {
-    setTouchStart(e.targetTouches[0].clientX);
-  };
-
-  const handleTouchMove = (e: React.TouchEvent) => {
-    setTouchEnd(e.targetTouches[0].clientX);
-  };
-
-  const handleTouchEnd = () => {
-    if (!touchStart || !touchEnd) return;
-
-    const distance = touchStart - touchEnd;
-    const isLeftSwipe = distance > 50;
-    const isRightSwipe = distance < -50;
-
-    if (isLeftSwipe) {
-      nextSlide();
-    } else if (isRightSwipe) {
-      prevSlide();
+        if (error) {
+          console.error('Error saving email:', error);
+          setError('Something went wrong. Please try again.');
+        } else {
+          console.log('Email saved successfully:', data);
+          setIsSubmitted(true);
+          setEmail('');
+          // Reset success message after 3 seconds
+          setTimeout(() => setIsSubmitted(false), 3000);
+        }
+      } catch (err) {
+        console.error('Error:', err);
+        setError('Something went wrong. Please try again.');
+      } finally {
+        setIsLoading(false);
+      }
     }
   };
 
-  // Keyboard navigation
-  useEffect(() => {
-    const handleKeyPress = (e: KeyboardEvent) => {
-      if (e.key === 'ArrowLeft') {
-        prevSlide();
-      } else if (e.key === 'ArrowRight') {
-        nextSlide();
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyPress);
-    return () => window.removeEventListener('keydown', handleKeyPress);
-  }, []);
 
   // Track active section and back to top button
   useEffect(() => {
@@ -237,89 +193,116 @@ export default function Home() {
             transition={{ duration: 1.2, delay: 1.0, type: "spring", stiffness: 100 }}
           >
             <div className={styles.centerLogoCircle}>
-              <div className={styles.centerBlocker}></div>
-              <span className={styles.centerLogoText}>Steady</span>
-              <div className={styles.centerLogoGlow}></div>
+              <Canvas
+                camera={{ position: [0, 0, 5] }}
+                style={{ width: '100%', height: '100%', borderRadius: '50%' }}
+                gl={{ 
+                  antialias: true, // Enable for smooth particles
+                  alpha: true,
+                  powerPreference: "high-performance" 
+                }}
+                dpr={[1, 2]} // Higher quality for particles
+              >
+                <Suspense fallback={
+                  <mesh>
+                    <sphereGeometry args={[1, 16, 16]} />
+                    <meshBasicMaterial color="#4a90e2" wireframe />
+                  </mesh>
+                }>
+                  <OrbitControls 
+                    enableZoom={false} 
+                    enablePan={false}
+                    enableDamping={false} // Disable damping for performance
+                  />
+                  <ambientLight intensity={0.8} />
+                  <directionalLight position={[2, 2, 2]} intensity={0.8} />
+                  <ParticleSphere />
+                </Suspense>
+              </Canvas>
             </div>
           </motion.div>
 
-          <div
-            className={styles.slideshowContainer}
-            onTouchStart={handleTouchStart}
-            onTouchMove={handleTouchMove}
-            onTouchEnd={handleTouchEnd}
+          {/* Email Signup in Hero */}
+          <motion.div
+            className={styles.heroSignupContainer}
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.8 }}
           >
-            {/* Navigation Arrows */}
-            <motion.button
-              className={`${styles.navArrow} ${styles.leftArrow}`}
-              onClick={prevSlide}
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-              initial={{ opacity: 0.7 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.3 }}
-            >
-              ‹
-            </motion.button>
-
-            <motion.button
-              className={`${styles.navArrow} ${styles.rightArrow}`}
-              onClick={nextSlide}
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-              initial={{ opacity: 0.7 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.3 }}
-            >
-              ›
-            </motion.button>
-
-            {/* Main Slide Content */}
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={currentSlide}
-                className={styles.slideContent}
-                initial={{ opacity: 0, x: 50 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -50 }}
-                transition={{ duration: 0.5 }}
+            <div className={styles.heroSignupContent}>
+              <motion.h2
+                className={styles.heroSignupTitle}
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.9 }}
               >
-                <h3>{slides[currentSlide].title}</h3>
-                <p>{slides[currentSlide].description}</p>
-              </motion.div>
-            </AnimatePresence>
+                Join the Waitlist
+              </motion.h2>
 
-            {/* Slide Indicators */}
-            <div className={styles.slideIndicators}>
-              {slides.map((_, index) => (
-                <motion.button
-                  key={index}
-                  className={`${styles.indicator} ${index === currentSlide ? styles.active : ''}`}
-                  onClick={() => goToSlide(index)}
-                  whileHover={{ scale: 1.2 }}
-                  whileTap={{ scale: 0.8 }}
-                  animate={{
-                    scale: index === currentSlide ? 1.1 : 1,
-                    backgroundColor: index === currentSlide ? 'var(--accent-purple)' : 'rgba(255, 255, 255, 0.3)'
-                  }}
-                  transition={{ duration: 0.3 }}
-                />
-              ))}
+              <motion.p
+                className={styles.heroSignupSubtitle}
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 1.0 }}
+              >
+                Be the first to know when Calendar Idea launches. Get early access and exclusive updates.
+              </motion.p>
+
+              <motion.form
+                className={styles.heroSignupForm}
+                onSubmit={handleEmailSubmit}
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 1.1 }}
+              >
+                <div className={styles.heroInputGroup}>
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="Enter your email address"
+                    className={styles.heroEmailInput}
+                    required
+                    disabled={isLoading}
+                  />
+                  <button
+                    type="submit"
+                    className={styles.heroSignupButton}
+                    disabled={isLoading}
+                  >
+                    {isLoading ? 'Joining...' : 'Join List'}
+                  </button>
+                </div>
+
+                {error && (
+                  <motion.div
+                    className={styles.heroErrorMessage}
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.8 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    ❌ {error}
+                  </motion.div>
+                )}
+
+                {isSubmitted && (
+                  <motion.div
+                    className={styles.heroSuccessMessage}
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.8 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    ✅ Thanks! We&apos;ll be in touch soon.
+                  </motion.div>
+                )}
+              </motion.form>
             </div>
-
-            {/* Auto-play Indicator */}
-            <motion.div
-              className={styles.autoPlayIndicator}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: isAutoPlaying ? 0.6 : 0 }}
-              transition={{ duration: 0.3 }}
-            >
-              <div className={styles.autoPlayDot} />
-              <span>Auto-playing</span>
-            </motion.div>
-          </div>
+          </motion.div>
         </div>
       </section>
+
 
         {/* Back to Top Button */}
         <motion.button

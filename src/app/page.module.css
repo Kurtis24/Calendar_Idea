@@ -178,7 +178,7 @@
 
 @media (min-width: 768px) {
   .hero {
-    padding-top: 5rem;
+    padding-top: 3rem;
   }
 }
 
@@ -192,6 +192,14 @@
   align-items: center;
   justify-content: center;
   min-height: inherit;
+  padding-top: 2rem;
+}
+
+/* More centered text on mobile */
+@media (max-width: 768px) {
+  .heroContent {
+    padding-top: 6rem;
+  }
 }
 
 .heroTitle {
@@ -599,30 +607,42 @@
 }
 
 .centerLogoCircle {
-  width: 26rem;
-  height: 26rem;
+  width: 32rem;
+  height: 32rem;
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: none;
-  transition: all 0.4s ease;
+  transition: all 0.6s ease;
   background: transparent;
   border-radius: 50%;
   user-select: none;
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
+  /* Clean container for particle sphere */
 }
 
-/* Non-clickable center area */
+/* Hide all extra visual elements */
+.centerLogoCircle::before,
+.centerLogoCircle::after {
+  display: none !important;
+}
+
+/* Modern sphere center - clean design */
 .centerLogoCircle .centerBlocker {
   position: absolute;
   top: 50%;
   left: 50%;
   width: 8rem;
   height: 8rem;
-  background: transparent;
+  /* Clean gradient center */
+  background: radial-gradient(circle,
+    rgba(147, 51, 234, 0.2) 0%,
+    rgba(219, 39, 119, 0.1) 50%,
+    transparent 100%
+  );
   border-radius: 50%;
   transform: translate(-50%, -50%);
   z-index: 2;
@@ -642,19 +662,28 @@
   width: 100%;
   height: 100%;
   border-radius: 50%;
-  background: conic-gradient(
-    from 180deg,
-    transparent 0deg,
-    transparent 60deg,
-    var(--accent-purple) 110deg,
-    var(--accent-blue) 180deg,
-    var(--accent-purple) 250deg,
-    transparent 300deg,
-    transparent 360deg
-  );
-  mask: radial-gradient(transparent calc(50% - 6px), black calc(50% - 3px));
-  -webkit-mask: radial-gradient(transparent calc(50% - 6px), black calc(50% - 3px));
-  z-index: 2;
+  /* Modern particle field */
+  background:
+    /* Floating particles */
+    radial-gradient(circle at 25% 25%, rgba(147, 51, 234, 0.8) 2px, transparent 3px),
+    radial-gradient(circle at 75% 30%, rgba(219, 39, 119, 0.7) 1.5px, transparent 2.5px),
+    radial-gradient(circle at 40% 70%, rgba(147, 51, 234, 0.6) 2.5px, transparent 3.5px),
+    radial-gradient(circle at 80% 80%, rgba(219, 39, 119, 0.8) 1px, transparent 2px),
+    radial-gradient(circle at 15% 60%, rgba(147, 51, 234, 0.5) 2px, transparent 3px),
+    radial-gradient(circle at 90% 20%, rgba(219, 39, 119, 0.6) 1.5px, transparent 2.5px),
+    radial-gradient(circle at 60% 15%, rgba(147, 51, 234, 0.7) 1px, transparent 2px),
+    radial-gradient(circle at 30% 85%, rgba(219, 39, 119, 0.5) 2.5px, transparent 3.5px),
+    /* Subtle energy rings */
+    radial-gradient(circle at center,
+      transparent 35%,
+      rgba(147, 51, 234, 0.1) 40%,
+      transparent 45%,
+      rgba(219, 39, 119, 0.08) 65%,
+      transparent 70%
+    );
+  z-index: 1;
+  /* Gentle floating animation */
+  animation: particleFloat 12s ease-in-out infinite;
 }
 
 .centerLogoCircle::after {
@@ -665,21 +694,20 @@
   width: 100%;
   height: 100%;
   border-radius: 50%;
-  background: conic-gradient(
-    from 180deg,
-    transparent 0deg,
-    transparent 60deg,
-    var(--accent-purple) 110deg,
-    var(--accent-blue) 180deg,
-    var(--accent-purple) 250deg,
-    transparent 300deg,
-    transparent 360deg
+  /* Elegant outer glow */
+  background: radial-gradient(circle at center,
+    transparent 45%,
+    rgba(147, 51, 234, 0.08) 50%,
+    rgba(219, 39, 119, 0.06) 70%,
+    rgba(147, 51, 234, 0.04) 85%,
+    transparent 100%
   );
-  z-index: 1;
-  filter: blur(50px);
-  opacity: 0.7;
-  transform: scale(1.05);
-  transition: all 0.4s ease;
+  z-index: 0;
+  filter: blur(20px);
+  opacity: 0.8;
+  transform: scale(1.1);
+  /* Gentle breathing animation */
+  animation: gentleGlow 10s ease-in-out infinite;
 }
 
 .centerLogoCircle:hover::after {
@@ -849,7 +877,7 @@
   bottom: 0;
   left: 50%;
   width: 100vw;
-  height: 50vh;
+  height: 150vh;
   transform: translateX(-50%) perspective(200px) rotateX(45deg);
   background-image:
     linear-gradient(var(--accent-purple) 1px, transparent 1px),
@@ -862,7 +890,7 @@
 
 .heroText {
   max-width: 48rem;
-  margin-bottom: 3rem;
+  margin-bottom: 1rem;
 }
 
 .heroHighlight {
@@ -1439,17 +1467,15 @@
 /* Ring Logo Responsive Adjustments - Maintain Ring Shape on Mobile */
 @media (max-width: 768px) {
   .centerLogoCircle {
-    width: 14rem;
-    height: 14rem;
+    width: 18rem;
+    height: 18rem;
     border-radius: 50%;
     cursor: none;
     user-select: none;
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
-    /* Keep the ring structure using conic-gradient for mobile */
-    background: transparent;
-    box-shadow: none;
+    /* Clean container for particle sphere - tablet version */
   }
 
   /* Maintain ring appearance on mobile using pseudo-elements */
@@ -1460,7 +1486,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    border-radius: 50%;
+    border-radius: 65% 35% 40% 60% / 40% 60% 35% 65%;
     background: conic-gradient(
       from 180deg,
       transparent 0deg,
@@ -1483,7 +1509,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    border-radius: 50%;
+    border-radius: 65% 35% 40% 60% / 40% 60% 35% 65%;
     background: conic-gradient(
       from 180deg,
       transparent 0deg,
@@ -1569,9 +1595,10 @@
 
 @media (max-width: 480px) {
   .centerLogoCircle {
-    width: 12rem;
-    height: 12rem;
+    width: 16rem;
+    height: 16rem;
     border-radius: 50%;
+    /* Clean container for particle sphere - mobile version */
   }
 
   .centerLogoCircle::before {
@@ -1669,197 +1696,35 @@
   }
 }
 
-.slideshowContainer {
-  margin-top: 2rem;
-  width: 100%;
-  max-width: 56rem;
-  min-height: 10rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  cursor: grab;
-}
-
-.slideshowContainer:active {
-  cursor: grabbing;
-}
-
-.slideContent {
-  width: 100%;
-  padding: 2rem;
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
-  border-radius: 1rem;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-}
-
-.slideContent h3 {
-  font-size: 1.5rem;
-  font-weight: 600;
-  margin-bottom: 0.75rem;
-  color: var(--text-primary);
-  text-align: center;
-}
-
-.slideContent p {
-  font-size: 1.125rem;
-  color: var(--text-secondary);
-  line-height: 1.5;
-  text-align: center;
-}
-
-/* Navigation Arrows */
-.navArrow {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 3rem;
-  height: 3rem;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 50%;
-  color: white;
-  font-size: 1.5rem;
-  font-weight: bold;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
-  z-index: 2;
-  opacity: 0.7;
-}
-
-.navArrow:hover {
-  background: rgba(139, 92, 246, 0.3);
-  border-color: rgba(139, 92, 246, 0.5);
-  opacity: 1;
-  transform: translateY(-50%) scale(1.1);
-}
-
-.leftArrow {
-  left: -1rem;
-}
-
-.rightArrow {
-  right: -1rem;
-}
-
-/* Slide Indicators */
-.slideIndicators {
-  position: absolute;
-  bottom: -3rem;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  gap: 0.75rem;
-  z-index: 2;
-}
-
-.indicator {
-  width: 0.75rem;
-  height: 0.75rem;
-  border-radius: 50%;
-  border: none;
-  background: rgba(255, 255, 255, 0.3);
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.indicator:hover {
-  background: rgba(139, 92, 246, 0.6);
-}
-
-.indicator.active {
-  background: var(--accent-purple);
-}
-
-/* Auto-play Indicator */
-.autoPlayIndicator {
-  position: absolute;
-  bottom: -5rem;
-  right: 0;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.75rem;
-  color: var(--text-secondary);
-  opacity: 0.6;
-}
-
-.autoPlayDot {
-  width: 0.5rem;
-  height: 0.5rem;
-  border-radius: 50%;
-  background: var(--accent-purple);
-  animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
+/* Particle floating animation */
+@keyframes particleFloat {
   0%, 100% {
-    opacity: 1;
+    transform: translateY(0px) rotate(0deg);
+    filter: brightness(1);
+  }
+  25% {
+    transform: translateY(-3px) rotate(90deg);
+    filter: brightness(1.1);
   }
   50% {
-    opacity: 0.3;
+    transform: translateY(-5px) rotate(180deg);
+    filter: brightness(0.9);
+  }
+  75% {
+    transform: translateY(-2px) rotate(270deg);
+    filter: brightness(1.05);
   }
 }
 
-/* Mobile responsiveness for navigation */
-@media (max-width: 768px) {
-  .navArrow {
-    width: 2.5rem;
-    height: 2.5rem;
-    font-size: 1.25rem;
+/* Gentle glow animation */
+@keyframes gentleGlow {
+  0%, 100% {
+    opacity: 0.6;
+    transform: scale(1.1);
   }
-
-  .leftArrow {
-    left: -0.5rem;
-  }
-
-  .rightArrow {
-    right: -0.5rem;
-  }
-
-  .slideIndicators {
-    bottom: -2.5rem;
-    gap: 0.5rem;
-  }
-
-  .indicator {
-    width: 0.625rem;
-    height: 0.625rem;
-  }
-
-  .autoPlayIndicator {
-    bottom: -4rem;
-    font-size: 0.7rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .navArrow {
-    width: 2rem;
-    height: 2rem;
-    font-size: 1rem;
-  }
-
-  .leftArrow {
-    left: 0.5rem;
-  }
-
-  .rightArrow {
-    right: 0.5rem;
-  }
-
-  .slideIndicators {
-    bottom: -2rem;
-  }
-
-  .autoPlayIndicator {
-    display: none; /* Hide on very small screens to save space */
+  50% {
+    opacity: 1;
+    transform: scale(1.15);
   }
 }
 
@@ -1900,6 +1765,147 @@
     height: 2.5rem;
   }
 }
+
+/* Hero Email Signup */
+.heroSignupContainer {
+  margin-top: 2rem;
+  width: 100%;
+  max-width: 32rem;
+}
+
+.heroSignupContent {
+  text-align: center;
+}
+
+.heroSignupTitle {
+  font-size: 1.75rem;
+  font-weight: bold;
+  margin-bottom: 0.75rem;
+  background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: var(--text-primary);
+}
+
+.heroSignupSubtitle {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  margin-bottom: 1.5rem;
+  line-height: 1.5;
+  opacity: 0.9;
+}
+
+.heroSignupForm {
+  max-width: 100%;
+}
+
+.heroInputGroup {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.heroEmailInput {
+  flex: 1;
+  min-width: 180px;
+  padding: 0.875rem 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(8px);
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+  outline: none;
+}
+
+.heroEmailInput:focus {
+  border-color: var(--accent-purple);
+  box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.15);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.heroEmailInput::placeholder {
+  color: var(--text-secondary);
+  opacity: 0.6;
+}
+
+.heroSignupButton {
+  background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+  color: white;
+  border: none;
+  padding: 0.875rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.2);
+  white-space: nowrap;
+}
+
+.heroSignupButton:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+}
+
+.heroSuccessMessage {
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  color: #22c55e;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.375rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  backdrop-filter: blur(8px);
+  margin-top: 0.75rem;
+  display: inline-block;
+}
+
+.heroErrorMessage {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #ef4444;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.375rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  backdrop-filter: blur(8px);
+  margin-top: 0.75rem;
+  display: inline-block;
+}
+
+/* Mobile styles for hero signup */
+@media (max-width: 768px) {
+  .heroSignupContainer {
+    margin-top: 3rem;
+    max-width: 28rem;
+  }
+
+  .heroSignupTitle {
+    font-size: 1.5rem;
+  }
+
+  .heroSignupSubtitle {
+    font-size: 0.9rem;
+  }
+
+  .heroInputGroup {
+    flex-direction: column;
+  }
+
+  .heroEmailInput {
+    width: 100%;
+    min-width: auto;
+  }
+
+  .heroSignupButton {
+    width: 100%;
+  }
+}
+
 
 /* Scroll Buffer for additional scrolling space */
 .scrollBuffer {
