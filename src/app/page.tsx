@@ -18,6 +18,7 @@ export default function Home() {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [showThankYouModal, setShowThankYouModal] = useState(false);
 
   // Handle email signup
   const handleEmailSubmit = async (e: React.FormEvent) => {
@@ -40,8 +41,11 @@ export default function Home() {
           console.log('Email saved successfully:', data);
           setIsSubmitted(true);
           setEmail('');
+          setShowThankYouModal(true);
           // Reset success message after 3 seconds
           setTimeout(() => setIsSubmitted(false), 3000);
+          // Hide modal after 5 seconds
+          setTimeout(() => setShowThankYouModal(false), 5000);
         }
       } catch (err) {
         console.error('Error:', err);
@@ -303,6 +307,80 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Thank You Modal */}
+      {showThankYouModal && (
+        <motion.div
+          className={styles.thankYouModal}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.3 }}
+        >
+          <motion.div
+            className={styles.thankYouContent}
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.8, opacity: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+          >
+            <div className={styles.thankYouIcon}>
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ duration: 0.6, delay: 0.3, type: "spring", stiffness: 200 }}
+              >
+                🎉
+              </motion.div>
+            </div>
+            <motion.h2
+              className={styles.thankYouTitle}
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ duration: 0.5, delay: 0.4 }}
+            >
+              Welcome to the Future! 🚀
+            </motion.h2>
+            <motion.p
+              className={styles.thankYouMessage}
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ duration: 0.5, delay: 0.6 }}
+            >
+              Thanks for joining our waitlist! You're now part of an exclusive group of early adopters who will be the first to experience Calendar Idea.
+            </motion.p>
+            <motion.div
+              className={styles.thankYouFeatures}
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ duration: 0.5, delay: 0.8 }}
+            >
+              <div className={styles.featureItem}>
+                <span className={styles.featureIcon}>✨</span>
+                <span>Early Access</span>
+              </div>
+              <div className={styles.featureItem}>
+                <span className={styles.featureIcon}>🎯</span>
+                <span>Exclusive Updates</span>
+              </div>
+              <div className={styles.featureItem}>
+                <span className={styles.featureIcon}>🚀</span>
+                <span>Beta Testing</span>
+              </div>
+            </motion.div>
+            <motion.button
+              className={styles.closeThankYou}
+              onClick={() => setShowThankYouModal(false)}
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ duration: 0.3, delay: 1.0 }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              Continue Exploring
+            </motion.button>
+          </motion.div>
+        </motion.div>
+      )}
 
         {/* Back to Top Button */}
         <motion.button
