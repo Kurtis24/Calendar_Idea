@@ -98,3 +98,5 @@ export default function OptimizedEarth(props) {
 // Preload the model
 useGLTF.preload('/circle.gltf')
 
+
+

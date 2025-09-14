@@ -1,12 +1,9 @@
 'use client'
 
-import React, { useState, useEffect, Suspense } from 'react'
+import React, { useState, useEffect } from 'react'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import Head from 'next/head'
 import styles from './page.module.css'
-import { Canvas } from '@react-three/fiber'
-import { OrbitControls } from '@react-three/drei'
-import ParticleSphere from '../components/ParticleSphere'
 import { supabase } from '../lib/supabase'
 
 export default function Home() {
@@ -19,6 +16,52 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [showThankYouModal, setShowThankYouModal] = useState(false);
+
+  // Card carousel state
+  const [currentCard, setCurrentCard] = useState(0);
+  const [isAutoScrolling, setIsAutoScrolling] = useState(true);
+  const [touchStart, setTouchStart] = useState(0);
+  const [touchEnd, setTouchEnd] = useState(0);
+
+  // Feature cards data
+  const featureCards = [
+    {
+      id: 1,
+      title: "Smart Scheduling",
+      description: "AI-powered time blocking that adapts to your productivity patterns and automatically schedules your most important tasks.",
+      icon: "🧠"
+    },
+    {
+      id: 2,
+      title: "Cross-Platform Sync",
+      description: "Seamlessly sync your calendar across all devices with real-time updates and conflict resolution.",
+      icon: "🔄"
+    },
+    {
+      id: 3,
+      title: "Goal Tracking",
+      description: "Set ambitious goals and track your progress with visual milestones and achievement badges.",
+      icon: "🎯"
+    },
+    {
+      id: 4,
+      title: "Focus Mode",
+      description: "Enter distraction-free focus sessions with automated Do Not Disturb and website blocking.",
+      icon: "🎧"
+    },
+    {
+      id: 5,
+      title: "Team Collaboration",
+      description: "Share calendars, delegate tasks, and coordinate seamlessly with your team members.",
+      icon: "🤝"
+    },
+    {
+      id: 6,
+      title: "Analytics & Insights",
+      description: "Get detailed insights into your time usage with beautiful charts and productivity reports.",
+      icon: "📊"
+    }
+  ];
 
   // Handle email signup
   const handleEmailSubmit = async (e: React.FormEvent) => {
@@ -77,6 +120,47 @@ export default function Home() {
     window.addEventListener('mousemove', handleMouseMove)
     return () => window.removeEventListener('mousemove', handleMouseMove)
   }, [])
+
+  // Auto-scroll carousel
+  useEffect(() => {
+    if (!isAutoScrolling) return
+
+    const interval = setInterval(() => {
+      setCurrentCard((prev) => (prev + 1) % featureCards.length)
+    }, 4000) // Change card every 4 seconds
+
+    return () => clearInterval(interval)
+  }, [isAutoScrolling, featureCards.length])
+
+  // Touch handlers for swipe functionality (vertical swipes)
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchStart(e.targetTouches[0].clientY)
+    setIsAutoScrolling(false) // Pause auto-scroll when user interacts
+  }
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    setTouchEnd(e.targetTouches[0].clientY)
+  }
+
+  const handleTouchEnd = () => {
+    if (!touchStart || !touchEnd) return
+
+    const distance = touchStart - touchEnd
+    const isSwipeUp = distance > 50  // Swipe up (next card)
+    const isSwipeDown = distance < -50  // Swipe down (previous card)
+
+    if (isSwipeUp) {
+      setCurrentCard((prev) => (prev + 1) % featureCards.length)
+    } else if (isSwipeDown) {
+      setCurrentCard((prev) => (prev - 1 + featureCards.length) % featureCards.length)
+    }
+
+    setTouchStart(0)
+    setTouchEnd(0)
+
+    // Resume auto-scroll after 10 seconds of inactivity
+    setTimeout(() => setIsAutoScrolling(true), 10000)
+  }
 
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId)
@@ -189,122 +273,140 @@ export default function Home() {
             </motion.p>
           </motion.div>
 
-          {/* Central Circular Logo */}
+          {/* Liquid Glass Scroll Component */}
           <motion.div
-            className={styles.heroCenterLogo}
+            className={styles.liquidGlassScroll}
             initial={{ opacity: 0, scale: 0.5 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 1.2, delay: 1.0, type: "spring", stiffness: 100 }}
           >
-            <div className={styles.centerLogoCircle}>
-              <Canvas
-                camera={{ position: [0, 0, 5] }}
-                style={{ width: '100%', height: '100%', borderRadius: '50%' }}
-                gl={{ 
-                  antialias: true, // Enable for smooth particles
-                  alpha: true,
-                  powerPreference: "high-performance" 
-                }}
-                dpr={[1, 2]} // Higher quality for particles
-              >
-                <Suspense fallback={
-                  <mesh>
-                    <sphereGeometry args={[1, 16, 16]} />
-                    <meshBasicMaterial color="#4a90e2" wireframe />
-                  </mesh>
-                }>
-                  <OrbitControls 
-                    enableZoom={false} 
-                    enablePan={false}
-                    enableDamping={false} // Disable damping for performance
-                  />
-                  <ambientLight intensity={0.8} />
-                  <directionalLight position={[2, 2, 2]} intensity={0.8} />
-                  <ParticleSphere />
-                </Suspense>
-              </Canvas>
-            </div>
-          </motion.div>
+            <div
+              className={styles.glassScrollContainer}
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={handleTouchEnd}
+            >
+              <div className={styles.glassScroll}>
+                <div className={styles.cardCarousel}>
+                  {featureCards.map((card, index) => {
+                    const getCardClass = () => {
+                      if (index === currentCard) return styles.activeCard;
+                      const diff = index - currentCard;
+                      if (diff === 1 || (diff === -5 && currentCard === 5)) return styles.nextCard;
+                      if (diff === -1 || (diff === 5 && currentCard === 0)) return styles.prevCard;
+                      return '';
+                    };
 
-          {/* Email Signup in Hero */}
-          <motion.div
-            className={styles.heroSignupContainer}
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.8 }}
-          >
-            <div className={styles.heroSignupContent}>
-              <motion.h2
-                className={styles.heroSignupTitle}
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.9 }}
-              >
-                Join the Waitlist
-              </motion.h2>
+                    const handleCardClick = () => {
+                      if (index !== currentCard) {
+                        setCurrentCard(index);
+                        setIsAutoScrolling(false);
+                        setTimeout(() => setIsAutoScrolling(true), 10000);
+                      }
+                    };
 
-              <motion.p
-                className={styles.heroSignupSubtitle}
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 1.0 }}
-              >
-                Be the first to know when Calendar Idea launches. Get early access and exclusive updates.
-              </motion.p>
-
-              <motion.form
-                className={styles.heroSignupForm}
-                onSubmit={handleEmailSubmit}
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 1.1 }}
-              >
-                <div className={styles.heroInputGroup}>
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="Enter your email address"
-                    className={styles.heroEmailInput}
-                    required
-                    disabled={isLoading}
-                  />
-                  <button
-                    type="submit"
-                    className={styles.heroSignupButton}
-                    disabled={isLoading}
-                  >
-                    {isLoading ? 'Joining...' : 'Join List'}
-                  </button>
+                    return (
+                      <motion.div
+                        key={card.id}
+                        className={`${styles.featureCard} ${getCardClass()}`}
+                        onClick={handleCardClick}
+                        transition={{ duration: 0.5, ease: "easeInOut" }}
+                      >
+                        <div className={styles.cardIcon}>{card.icon}</div>
+                        <h3 className={styles.cardTitle}>{card.title}</h3>
+                        <p className={styles.cardDescription}>{card.description}</p>
+                      </motion.div>
+                    );
+                  })}
                 </div>
-
-                {error && (
-                  <motion.div
-                    className={styles.heroErrorMessage}
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.8 }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    ❌ {error}
-                  </motion.div>
-                )}
-
-                {isSubmitted && (
-                  <motion.div
-                    className={styles.heroSuccessMessage}
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.8 }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    ✅ Thanks! We&apos;ll be in touch soon.
-                  </motion.div>
-                )}
-              </motion.form>
+              </div>
             </div>
           </motion.div>
+
         </div>
+      </section>
+
+      {/* Bottom Waitlist Section */}
+      <section className={styles.bottomWaitlist}>
+        <motion.div
+          className={styles.bottomWaitlistContainer}
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+          viewport={{ once: true }}
+        >
+          <motion.h2
+            className={styles.bottomWaitlistTitle}
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            viewport={{ once: true }}
+          >
+            Join the Waitlist
+          </motion.h2>
+
+          <motion.p
+            className={styles.bottomWaitlistSubtitle}
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.6 }}
+            viewport={{ once: true }}
+          >
+            Be the first to know when Calendar Idea launches
+          </motion.p>
+
+          <motion.form
+            className={styles.bottomWaitlistForm}
+            onSubmit={handleEmailSubmit}
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.8 }}
+            viewport={{ once: true }}
+          >
+            <div className={styles.bottomInputGroup}>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Enter your email"
+                className={styles.bottomEmailInput}
+                required
+                disabled={isLoading}
+              />
+              <button
+                type="submit"
+                className={styles.bottomSignupButton}
+                disabled={isLoading}
+              >
+                {isLoading ? 'Joining...' : 'Join Waitlist'}
+              </button>
+            </div>
+
+            {error && (
+              <motion.div
+                className={styles.bottomErrorMessage}
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.8 }}
+                transition={{ duration: 0.3 }}
+              >
+                ❌ {error}
+              </motion.div>
+            )}
+
+            {isSubmitted && (
+              <motion.div
+                className={styles.bottomSuccessMessage}
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.8 }}
+                transition={{ duration: 0.3 }}
+              >
+                ✅ Thanks! We&apos;ll be in touch soon.
+              </motion.div>
+            )}
+          </motion.form>
+        </motion.div>
       </section>
 
       {/* Thank You Modal */}
@@ -346,7 +448,7 @@ export default function Home() {
               animate={{ y: 0, opacity: 1 }}
               transition={{ duration: 0.5, delay: 0.6 }}
             >
-              Thanks for joining our waitlist! You're now part of an exclusive group of early adopters who will be the first to experience Calendar Idea.
+              Thanks for joining our waitlist! You&apos;re now part of an exclusive group of early adopters who will be the first to experience Calendar Idea.
             </motion.p>
             <motion.div
               className={styles.thankYouFeatures}
