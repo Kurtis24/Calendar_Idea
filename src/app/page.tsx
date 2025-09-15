@@ -8,7 +8,6 @@ import { supabase } from '../lib/supabase'
 
 export default function Home() {
   const [showBackToTop, setShowBackToTop] = useState(false)
-  const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 })
   const { scrollY } = useScroll()
   const y2 = useTransform(scrollY, [0, 300], [0, -100])
   const [email, setEmail] = useState('');
@@ -111,16 +110,6 @@ export default function Home() {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
-  // Custom cursor tracking
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      setCursorPosition({ x: e.clientX, y: e.clientY })
-    }
-
-    window.addEventListener('mousemove', handleMouseMove)
-    return () => window.removeEventListener('mousemove', handleMouseMove)
-  }, [])
-
   // Auto-scroll carousel
   useEffect(() => {
     if (!isAutoScrolling) return
@@ -211,15 +200,6 @@ export default function Home() {
   }
   return (
     <>
-      {/* Custom RGB Cursor */}
-      <div
-        className="cursor"
-        style={{
-          left: `${cursorPosition.x - 10}px`,
-          top: `${cursorPosition.y - 10}px`,
-        }}
-      />
-
       <Head>
         <script
           type="application/ld+json"
