@@ -26,39 +26,27 @@ export default function Home() {
   const featureCards = [
     {
       id: 1,
-      title: "Smart Scheduling",
-      description: "AI-powered time blocking that adapts to your productivity patterns and automatically schedules your most important tasks.",
+      title: "Defy AI",
+      description: "The smart AI scheduler that schedules around your personal capacity, mood and energy.",
       icon: "🧠"
     },
     {
       id: 2,
-      title: "Cross-Platform Sync",
-      description: "Seamlessly sync your calendar across all devices with real-time updates and conflict resolution.",
-      icon: "🔄"
+      title: "Smart Scheduling",
+      description: "No organizing needed on your end. You just need to blurt whatever is on your mind.",
+      icon: "💭"
     },
     {
       id: 3,
-      title: "Goal Tracking",
-      description: "Set ambitious goals and track your progress with visual milestones and achievement badges.",
-      icon: "🎯"
+      title: "Your Personal Assistant",
+      description: "Understand your work style and adapts your schedule for you.",
+      icon: "💼"
     },
     {
       id: 4,
-      title: "Focus Mode",
-      description: "Enter distraction-free focus sessions with automated Do Not Disturb and website blocking.",
+      title: "Accountability",
+      description: "Keeps you on track with gentle nudges, backup plans, and can connect your calendar with accountability buddies to make sure you're on track.",
       icon: "🎧"
-    },
-    {
-      id: 5,
-      title: "Team Collaboration",
-      description: "Share calendars, delegate tasks, and coordinate seamlessly with your team members.",
-      icon: "🤝"
-    },
-    {
-      id: 6,
-      title: "Analytics & Insights",
-      description: "Get detailed insights into your time usage with beautiful charts and productivity reports.",
-      icon: "📊"
     }
   ];
 
