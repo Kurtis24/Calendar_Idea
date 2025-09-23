@@ -218,7 +218,7 @@ export default function Home() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.4 }}
             >
-              Your Tempo, Your Control.
+              Your Tempo, With Defy AI.
               <span className={styles.heroHighlight}> The Elite Productivity Planner</span>
             </motion.h1>
 
