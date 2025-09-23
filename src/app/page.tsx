@@ -28,16 +28,19 @@ export default function Home() {
       id: 1,
       title: "Smart Scheduling",
       description: "No organizing needed on your end. You just need to blurt whatever is on your mind.",
+      icon: "🧠"
     },
     {
       id: 2,
       title: "Your Personal Assistant",
       description: "Understand your work style and adapts your schedule for you.",
+      icon: "🤖"
     },
     {
       id: 3,
       title: "Accountability",
       description: "Keeps you on track with gentle nudges, backup plans, and can connect your calendar with accountability buddies to make sure you're on track.",
+      icon: "🎯"
     }
   ];
 
