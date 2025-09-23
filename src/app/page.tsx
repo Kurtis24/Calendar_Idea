@@ -28,19 +28,16 @@ export default function Home() {
       id: 1,
       title: "Smart Scheduling",
       description: "No organizing needed on your end. You just need to blurt whatever is on your mind.",
-      icon: "🧠"
     },
     {
       id: 2,
       title: "Your Personal Assistant",
       description: "Understand your work style and adapts your schedule for you.",
-      icon: "🤖"
     },
     {
       id: 3,
       title: "Accountability",
       description: "Keeps you on track with gentle nudges, backup plans, and can connect your calendar with accountability buddies to make sure you're on track.",
-      icon: "🎯"
     }
   ];
 
@@ -274,7 +271,6 @@ export default function Home() {
                         onClick={handleCardClick}
                         transition={{ duration: 0.5, ease: "easeInOut" }}
                       >
-                        <div className={styles.cardIcon}>{card.icon}</div>
                         <h3 className={styles.cardTitle}>{card.title}</h3>
                         <p className={styles.cardDescription}>{card.description}</p>
                       </motion.div>

@@ -2286,11 +2286,6 @@
   transform: scale(0.97) translateY(-120px);
 }
 
-.cardIcon {
-  font-size: 2.5rem;
-  margin-bottom: 1rem;
-  animation: floatIcon 3s ease-in-out infinite;
-}
 
 .cardTitle {
   font-size: 1.2rem;
@@ -2311,14 +2306,6 @@
   margin: 0;
 }
 
-@keyframes floatIcon {
-  0%, 100% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-5px);
-  }
-}
 
 .liquidEffect {
   position: absolute;
@@ -2503,9 +2490,6 @@
     transform: scale(0.95) translateY(-80px);
   }
 
-  .cardIcon {
-    font-size: 2rem;
-  }
 
   .cardTitle {
     font-size: 1.1rem;
