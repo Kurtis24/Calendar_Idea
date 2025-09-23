@@ -26,27 +26,18 @@ export default function Home() {
   const featureCards = [
     {
       id: 1,
-      title: "Defy AI",
-      description: "The smart AI scheduler that schedules around your personal capacity, mood and energy.",
-      icon: "🧠"
+      title: "Smart Scheduling",
+      description: "No organizing needed on your end. You just need to blurt whatever is on your mind.",
     },
     {
       id: 2,
-      title: "Smart Scheduling",
-      description: "No organizing needed on your end. You just need to blurt whatever is on your mind.",
-      icon: "💭"
+      title: "Your Personal Assistant",
+      description: "Understand your work style and adapts your schedule for you.",
     },
     {
       id: 3,
-      title: "Your Personal Assistant",
-      description: "Understand your work style and adapts your schedule for you.",
-      icon: "💼"
-    },
-    {
-      id: 4,
       title: "Accountability",
       description: "Keeps you on track with gentle nudges, backup plans, and can connect your calendar with accountability buddies to make sure you're on track.",
-      icon: "🎧"
     }
   ];
 
@@ -237,7 +228,7 @@ export default function Home() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.6 }}
             >
-              Calendar Idea keeps you organized and boosts your productivity every day.
+              The smart AI scheduler that schedules around your personal capacity, mood and energy.
             </motion.p>
           </motion.div>
 
