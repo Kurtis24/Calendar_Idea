@@ -6,10 +6,10 @@ import {
   type ISourceOptions,
 } from "@tsparticles/engine";
 import { loadSlim } from "@tsparticles/slim";
-import { useEffect, useState } from "react";
+import { useEffect, useState, memo } from "react";
 import { loadLightInteraction } from "@tsparticles/interaction-light";
 
-const ParticleBackground = () => {
+const ParticleBackground = memo(() => {
   const [init, setInit] = useState(false);
   useEffect(() => {
     initParticlesEngine(async (engine) => {
@@ -102,7 +102,9 @@ const ParticleBackground = () => {
   }
 
   return <></>
-};
+});
+
+ParticleBackground.displayName = 'ParticleBackground';
 
 export default ParticleBackground;
 

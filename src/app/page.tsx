@@ -10,6 +10,7 @@ export default function Home() {
   const [isClient, setIsClient] = useState(false);
   const [email, setEmail] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isNewUser, setIsNewUser] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -34,9 +35,21 @@ export default function Home() {
 
         if (error) {
           console.error('Error saving email:', error);
-          setError('Something went wrong. Please try again.');
+          console.error('Error details:', JSON.stringify(error, null, 2));
+          
+          // Check if it's a duplicate email error
+          if (error.code === '23505' || error.message?.includes('duplicate key') || error.message?.includes('already exists')) {
+            setIsNewUser(false);
+            setIsSubmitted(true);
+            setEmail('');
+            // Reset success message after 3 seconds
+            setTimeout(() => setIsSubmitted(false), 3000);
+          } else {
+            setError(`Database error: ${error.message || 'Something went wrong. Please try again.'}`);
+          }
         } else {
           console.log('Email saved successfully:', data);
+          setIsNewUser(true);
           setIsSubmitted(true);
           setEmail('');
           // Reset success message after 3 seconds
@@ -310,7 +323,7 @@ export default function Home() {
                     fontSize: '0.875rem'
                   }}
               >
-                ✅ Thanks! We&apos;ll be in touch soon.
+                ✅ {isNewUser ? 'Thanks for your interest!' : 'Thank you so much for your interest, we will be in touch soon!'}
               </motion.div>
             )}
           </motion.form>
