@@ -323,7 +323,7 @@ export default function Home() {
                     fontSize: '0.875rem'
                   }}
               >
-                ✅ {isNewUser ? 'You have already been added to the waitlist!' : 'Thank you so much for your interest, we will be in touch soon!'}
+                ✅ {isNewUser ? 'You have already been added to the waitlist!' : 'You have already been added to the waitlist!'}
               </motion.div>
             )}
           </motion.form>
