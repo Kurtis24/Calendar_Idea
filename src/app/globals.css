@@ -40,15 +40,49 @@ html {
   font-family: 'Inter', system-ui, sans-serif;
   background: #000000;
   height: 100%;
+  overflow-x: hidden;
 }
 
 body {
-  background: linear-gradient(180deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+  background: linear-gradient(to top, #0a0e27 0%, #020617 40%, #000000 100%);
   color: var(--text-primary);
   min-height: 100vh;
   height: 100%;
   font-family: 'Inter', system-ui, sans-serif;
   transition: background 0.3s ease, color 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+body::after {
+  content: '';
+  position: absolute;
+  bottom: -40%;
+  left: 50%;
+  width: 80%;
+  height: 80%;
+  transform: translateX(-50%);
+  background: radial-gradient(ellipse at bottom, 
+    rgba(52, 211, 153, 0.25) 0%,   /* --accent-green with opacity */
+    rgba(167, 139, 250, 0.2) 40%,  /* --accent-purple with opacity */
+    transparent 70%
+  );
+  filter: blur(120px);
+  z-index: 1;
+  pointer-events: none;
+}
+
+.main-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 2;
+  overflow: hidden;
+  font-family: 'Inter', system-ui, sans-serif;
+  cursor: default;
 }
 
 

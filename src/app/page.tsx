@@ -1,45 +1,22 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import { motion, useScroll, useTransform } from 'framer-motion'
+import { motion } from 'framer-motion'
 import Head from 'next/head'
-import styles from './page.module.css'
 import { supabase } from '../lib/supabase'
+import ParticleBackground from '@/components/ParticleBackground'
 
 export default function Home() {
-  const [showBackToTop, setShowBackToTop] = useState(false)
-  const { scrollY } = useScroll()
-  const y2 = useTransform(scrollY, [0, 300], [0, -100])
+  const [isClient, setIsClient] = useState(false);
   const [email, setEmail] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-  const [showThankYouModal, setShowThankYouModal] = useState(false);
 
-  // Card carousel state
-  const [currentCard, setCurrentCard] = useState(0);
-  const [isAutoScrolling, setIsAutoScrolling] = useState(true);
-  const [touchStart, setTouchStart] = useState(0);
-  const [touchEnd, setTouchEnd] = useState(0);
-
-  // Feature cards data
-  const featureCards = [
-    {
-      id: 1,
-      title: "Smart Scheduling",
-      description: "No organizing needed on your end. You just need to blurt whatever is on your mind.",
-    },
-    {
-      id: 2,
-      title: "Your Personal Assistant",
-      description: "Understand your work style and adapts your schedule for you.",
-    },
-    {
-      id: 3,
-      title: "Accountability",
-      description: "Keeps you on track with gentle nudges, backup plans, and can connect your calendar with accountability buddies to make sure you're on track.",
-    }
-  ];
+  useEffect(() => {
+    setIsClient(true);
+    return () => {}; // Empty return for useEffect cleanup
+  }, []);
 
   // Handle email signup
   const handleEmailSubmit = async (e: React.FormEvent) => {
@@ -62,11 +39,8 @@ export default function Home() {
           console.log('Email saved successfully:', data);
           setIsSubmitted(true);
           setEmail('');
-          setShowThankYouModal(true);
           // Reset success message after 3 seconds
           setTimeout(() => setIsSubmitted(false), 3000);
-          // Hide modal after 5 seconds
-          setTimeout(() => setShowThankYouModal(false), 5000);
         }
       } catch (err) {
         console.error('Error:', err);
@@ -77,105 +51,31 @@ export default function Home() {
     }
   };
 
-
-  // Track active section and back to top button
-  useEffect(() => {
-    const handleScroll = () => {
-      // Show/hide back to top button
-      setShowBackToTop(window.scrollY > 500)
-    }
-
-    window.addEventListener('scroll', handleScroll)
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [])
-
-  // Auto-scroll carousel
-  useEffect(() => {
-    if (!isAutoScrolling) return
-
-    const interval = setInterval(() => {
-      setCurrentCard((prev) => (prev + 1) % featureCards.length)
-    }, 4000) // Change card every 4 seconds
-
-    return () => clearInterval(interval)
-  }, [isAutoScrolling, featureCards.length])
-
-  // Touch handlers for swipe functionality (vertical swipes)
-  const handleTouchStart = (e: React.TouchEvent) => {
-    setTouchStart(e.targetTouches[0].clientY)
-    setIsAutoScrolling(false) // Pause auto-scroll when user interacts
-  }
-
-  const handleTouchMove = (e: React.TouchEvent) => {
-    setTouchEnd(e.targetTouches[0].clientY)
-  }
-
-  const handleTouchEnd = () => {
-    if (!touchStart || !touchEnd) return
-
-    const distance = touchStart - touchEnd
-    const isSwipeUp = distance > 50  // Swipe up (next card)
-    const isSwipeDown = distance < -50  // Swipe down (previous card)
-
-    if (isSwipeUp) {
-      setCurrentCard((prev) => (prev + 1) % featureCards.length)
-    } else if (isSwipeDown) {
-      setCurrentCard((prev) => (prev - 1 + featureCards.length) % featureCards.length)
-    }
-
-    setTouchStart(0)
-    setTouchEnd(0)
-
-    // Resume auto-scroll after 10 seconds of inactivity
-    setTimeout(() => setIsAutoScrolling(true), 10000)
-  }
-
-  const scrollToSection = (sectionId: string) => {
-    const element = document.getElementById(sectionId)
-    if (element) {
-      const headerOffset = 80
-      const elementPosition = element.offsetTop
-      const offsetPosition = elementPosition - headerOffset
-
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: 'smooth'
-      })
-    }
-  }
-
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
-    "name": "SmartWallet",
-    "description": "Advanced security, cross-platform access, and seamless digital asset management for cryptocurrency users.",
-    "url": "https://smartwallet.app",
-    "applicationCategory": "FinanceApplication",
-    "operatingSystem": "iOS, Android, Web",
+    "name": "Defy AI",
+    "description": "The smart AI scheduler that schedules around your personal capacity, mood and energy.",
+    "url": "https://defyai.app",
+    "applicationCategory": "ProductivityApplication",
+    "operatingSystem": "Web",
     "offers": {
       "@type": "Offer",
       "price": "0",
       "priceCurrency": "USD",
-      "description": "Free tier with premium features available"
+      "description": "Early access available for beta users"
     },
     "author": {
       "@type": "Organization",
-      "name": "SmartWallet Inc."
+      "name": "Defy AI Inc."
     },
     "featureList": [
-      "Multi-chain support",
-      "Advanced security features",
-      "NFT marketplace integration",
-      "Cross-platform synchronization",
-      "DeFi protocol access"
-    ],
-    "aggregateRating": {
-      "@type": "AggregateRating",
-      "ratingValue": "4.8",
-      "ratingCount": "12543",
-      "bestRating": "5",
-      "worstRating": "1"
-    }
+      "Smart Scheduling",
+      "Personal Assistant",
+      "Accountability",
+      "Mood-based planning",
+      "Energy optimization"
+    ]
   }
   return (
     <>
@@ -188,165 +88,209 @@ export default function Home() {
         />
       </Head>
 
-      {/* Main Content Container */}
-      <motion.div
-        className={styles.mainContent}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.8, delay: 0.3 }}
-      >
-      {/* Hero Section */}
-      <section id="hero" className={styles.hero}>
-        <motion.div
-          className={styles.heroBackground}
-          style={{ y: y2 }}
-        >
-          <div className={styles.heroGradient}></div>
-          <div className={styles.walkwayGrid}></div>
-        </motion.div>
-
-        <div className={styles.heroContent}>
+      {/* Main Container */}
+      <div className="main-container">
+        {isClient && <ParticleBackground />}
+ 
+        {/* Main Content */}
+        <div style={{ 
+          position: 'relative', 
+          zIndex: 10, 
+          textAlign: 'center', 
+          padding: '0 2rem',
+          maxWidth: '900px',
+          margin: '0 auto'
+        }}>
           <motion.div
-            className={styles.heroText}
-            initial={{ opacity: 0, y: 50 }}
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
+            transition={{ duration: 1, ease: "easeOut" }}
           >
-            <motion.h1
-              className={styles.heroTitle}
-              initial={{ opacity: 0, y: 30 }}
+            <h1 style={{
+              fontSize: 'clamp(2rem, 6vw, 4rem)',
+              fontWeight: 500,
+              color: 'white',
+              marginBottom: '1rem',
+              lineHeight: 1.4,
+              letterSpacing: '-0.02em'
+            }}>
+              {["Thank", "you", "for"].map((word, index) => (
+                <motion.span
+                  key={index}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ 
+                    duration: 0.6, 
+                    delay: index * 0.2,
+                    ease: "easeOut"
+                  }}
+                  style={{ display: 'inline-block', marginRight: '0.3em' }}
+                >
+                  {word}
+                </motion.span>
+              ))}
+              <br />
+              {["waiting", "for"].map((word, index) => (
+                <motion.span
+                  key={index + 3}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ 
+                    duration: 0.6, 
+                    delay: (index + 3) * 0.2,
+                    ease: "easeOut"
+                  }}
+                  style={{ display: 'inline-block', marginRight: '0.3em' }}
+                >
+                  {word}
+                </motion.span>
+              ))}{" "}
+              <motion.span
+                initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.4 }}
+                transition={{ 
+                  duration: 0.8, 
+                  delay: 5 * 0.2,
+                  ease: "easeOut"
+                }}
+                style={{
+                  background: 'linear-gradient(135deg, #60a5fa 0%, #a78bfa 100%)',
+                  WebkitBackgroundClip: 'text',
+                  backgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  fontStyle: 'italic',
+                  fontWeight: 400,
+                  fontFamily: 'Georgia, "Times New Roman", serif',
+                  textShadow: '0 0 20px rgba(96, 165, 250, 0.3)',
+                  filter: 'drop-shadow(0 0 10px rgba(167, 139, 250, 0.4))',
+                  letterSpacing: '0.05em',
+                  display: 'inline-block'
+                }}
             >
-              Your Tempo, With Defy AI.
-              <span className={styles.heroHighlight}> The Elite Productivity Planner</span>
-            </motion.h1>
+              Defy AI
+              </motion.span>
+            </h1>
 
-            <motion.p
-              className={styles.heroSubtitle}
-              initial={{ opacity: 0, y: 30 }}
+            <p style={{
+              fontSize: 'clamp(0.875rem, 2vw, 1rem)',
+              fontWeight: 600,
+              color: 'rgba(203, 213, 225, 0.8)',
+              marginBottom: '2rem',
+              maxWidth: '500px',
+              margin: '0 auto 2rem auto',
+              lineHeight: 1.6
+            }}>
+              {["Sign", "up", "below", "to", "be", "the", "first", "to", "know", "when", "it's", "released"].map((word, index) => (
+                <motion.span
+                  key={index}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ 
+                    duration: 0.4, 
+                    delay: 1.2 + (index * 0.1),
+                    ease: "easeOut"
+                  }}
+                  style={{ display: 'inline-block', marginRight: '0.25em' }}
+                >
+                  {word}
+                </motion.span>
+              ))}
+            </p>
+
+            {/* Email Signup Form */}
+            <motion.form
+              onSubmit={handleEmailSubmit}
+              style={{ maxWidth: '400px', margin: '0 auto' }}
+              initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.6 }}
+              transition={{ duration: 0.8, delay: 0.3 }}
             >
-              The smart AI scheduler that schedules around your personal capacity, mood and energy.
-            </motion.p>
-          </motion.div>
-
-          {/* Liquid Glass Scroll Component */}
-          <motion.div
-            className={styles.liquidGlassScroll}
-            initial={{ opacity: 0, scale: 0.5 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 1.2, delay: 1.0, type: "spring", stiffness: 100 }}
-          >
-            <div
-              className={styles.glassScrollContainer}
-              onTouchStart={handleTouchStart}
-              onTouchMove={handleTouchMove}
-              onTouchEnd={handleTouchEnd}
-            >
-              <div className={styles.glassScroll}>
-                <div className={styles.cardCarousel}>
-                  {featureCards.map((card, index) => {
-                    const getCardClass = () => {
-                      if (index === currentCard) return styles.activeCard;
-                      const diff = index - currentCard;
-                      if (diff === 1 || (diff === -5 && currentCard === 5)) return styles.nextCard;
-                      if (diff === -1 || (diff === 5 && currentCard === 0)) return styles.prevCard;
-                      return '';
-                    };
-
-                    const handleCardClick = () => {
-                      if (index !== currentCard) {
-                        setCurrentCard(index);
-                        setIsAutoScrolling(false);
-                        setTimeout(() => setIsAutoScrolling(true), 10000);
-                      }
-                    };
-
-                    return (
-                      <motion.div
-                        key={card.id}
-                        className={`${styles.featureCard} ${getCardClass()}`}
-                        onClick={handleCardClick}
-                        transition={{ duration: 0.5, ease: "easeInOut" }}
-                      >
-                        <h3 className={styles.cardTitle}>{card.title}</h3>
-                        <p className={styles.cardDescription}>{card.description}</p>
-                      </motion.div>
-                    );
-                  })}
-                </div>
-              </div>
-            </div>
-          </motion.div>
-
-        </div>
-      </section>
-
-      {/* Bottom Waitlist Section */}
-      <section className={styles.bottomWaitlist}>
-        <motion.div
-          className={styles.bottomWaitlistContainer}
-          initial={{ opacity: 0, y: 50 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-          viewport={{ once: true }}
-        >
-          <motion.h2
-            className={styles.bottomWaitlistTitle}
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            viewport={{ once: true }}
-          >
-            Join the Waitlist
-          </motion.h2>
-
-          <motion.p
-            className={styles.bottomWaitlistSubtitle}
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.6 }}
-            viewport={{ once: true }}
-          >
-            Be the first to know when Calendar Idea launches
-          </motion.p>
-
-          <motion.form
-            className={styles.bottomWaitlistForm}
-            onSubmit={handleEmailSubmit}
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.8 }}
-            viewport={{ once: true }}
-          >
-            <div className={styles.bottomInputGroup}>
+              <div style={{
+                display: 'flex',
+                gap: '0.75rem',
+                flexDirection: 'row',
+                alignItems: 'center'
+              }}
+              className="responsive-form-container">
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="Enter your email"
-                className={styles.bottomEmailInput}
+                  placeholder="Your Email Address"
+                  style={{
+                    flex: 1,
+                    padding: '0.875rem 1.25rem',
+                    background: 'rgba(30, 41, 59, 0.8)',
+                    backdropFilter: 'blur(12px)',
+                    border: '1px solid rgba(71, 85, 105, 0.4)',
+                    borderRadius: '8px',
+                    color: 'white',
+                    fontSize: '1rem',
+                    outline: 'none',
+                    transition: 'all 0.3s ease',
+                    minWidth: '280px',
+                    width: '100%'
+                  }}
+                  onFocus={(e) => {
+                    const target = e.target as HTMLInputElement;
+                    target.style.borderColor = 'rgba(96, 165, 250, 0.6)';
+                    target.style.boxShadow = '0 0 0 3px rgba(96, 165, 250, 0.1)';
+                  }}
+                  onBlur={(e) => {
+                    const target = e.target as HTMLInputElement;
+                    target.style.borderColor = 'rgba(71, 85, 105, 0.4)';
+                    target.style.boxShadow = 'none';
+                  }}
                 required
                 disabled={isLoading}
               />
               <button
                 type="submit"
-                className={styles.bottomSignupButton}
+                  style={{
+                    padding: '0.875rem 1.5rem',
+                    background: 'white',
+                    color: '#1e293b',
+                    border: 'none',
+                    borderRadius: '8px',
+                    fontWeight: 600,
+                    fontSize: '1rem',
+                    cursor: isLoading ? 'not-allowed' : 'pointer',
+                    transition: 'all 0.3s ease',
+                    opacity: isLoading ? 0.7 : 1,
+                    whiteSpace: 'nowrap',
+                    minWidth: '140px'
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!isLoading) {
+                      const target = e.target as HTMLButtonElement;
+                      target.style.background = '#f1f5f9';
+                      target.style.transform = 'translateY(-1px)';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    const target = e.target as HTMLButtonElement;
+                    target.style.background = 'white';
+                    target.style.transform = 'translateY(0)';
+                  }}
                 disabled={isLoading}
               >
-                {isLoading ? 'Joining...' : 'Join Waitlist'}
+                  {isLoading ? 'Joining...' : 'Get Notified'}
               </button>
             </div>
 
             {error && (
               <motion.div
-                className={styles.bottomErrorMessage}
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.8 }}
-                transition={{ duration: 0.3 }}
+                  style={{
+                    marginTop: '1rem',
+                    padding: '0.75rem 1rem',
+                    background: 'rgba(239, 68, 68, 0.1)',
+                    border: '1px solid rgba(239, 68, 68, 0.3)',
+                    borderRadius: '6px',
+                    color: '#fca5a5',
+                    fontSize: '0.875rem'
+                  }}
               >
                 ❌ {error}
               </motion.div>
@@ -354,115 +298,58 @@ export default function Home() {
 
             {isSubmitted && (
               <motion.div
-                className={styles.bottomSuccessMessage}
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.8 }}
-                transition={{ duration: 0.3 }}
+                  style={{
+                    marginTop: '1rem',
+                    padding: '0.75rem 1rem',
+                    background: 'rgba(34, 197, 94, 0.1)',
+                    border: '1px solid rgba(34, 197, 94, 0.3)',
+                    borderRadius: '6px',
+                    color: '#86efac',
+                    fontSize: '0.875rem'
+                  }}
               >
                 ✅ Thanks! We&apos;ll be in touch soon.
               </motion.div>
             )}
           </motion.form>
         </motion.div>
-      </section>
+        </div>
 
-      {/* Thank You Modal */}
-      {showThankYouModal && (
-        <motion.div
-          className={styles.thankYouModal}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.3 }}
-        >
-          <motion.div
-            className={styles.thankYouContent}
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.8, opacity: 0 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-          >
-            <div className={styles.thankYouIcon}>
-              <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ duration: 0.6, delay: 0.3, type: "spring", stiffness: 200 }}
-              >
-                🎉
-              </motion.div>
-            </div>
-            <motion.h2
-              className={styles.thankYouTitle}
-              initial={{ y: 20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ duration: 0.5, delay: 0.4 }}
-            >
-              Welcome to the Future! 🚀
-            </motion.h2>
-            <motion.p
-              className={styles.thankYouMessage}
-              initial={{ y: 20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ duration: 0.5, delay: 0.6 }}
-            >
-              Thanks for joining our waitlist! You&apos;re now part of an exclusive group of early adopters who will be the first to experience Calendar Idea.
-            </motion.p>
-            <motion.div
-              className={styles.thankYouFeatures}
-              initial={{ y: 20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ duration: 0.5, delay: 0.8 }}
-            >
-              <div className={styles.featureItem}>
-                <span className={styles.featureIcon}>✨</span>
-                <span>Early Access</span>
-              </div>
-              <div className={styles.featureItem}>
-                <span className={styles.featureIcon}>🎯</span>
-                <span>Exclusive Updates</span>
-              </div>
-              <div className={styles.featureItem}>
-                <span className={styles.featureIcon}>🚀</span>
-                <span>Beta Testing</span>
-              </div>
-            </motion.div>
-            <motion.button
-              className={styles.closeThankYou}
-              onClick={() => setShowThankYouModal(false)}
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ duration: 0.3, delay: 1.0 }}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              Continue Exploring
-            </motion.button>
-          </motion.div>
-        </motion.div>
-      )}
-
-        {/* Back to Top Button */}
-        <motion.button
-          className={styles.backToTop}
-          initial={{ opacity: 0, scale: 0 }}
-          animate={{
-            opacity: showBackToTop ? 1 : 0,
-            scale: showBackToTop ? 1 : 0
-          }}
-          transition={{ duration: 0.3 }}
-          onClick={() => scrollToSection('hero')}
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
-        >
-          <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
-          </svg>
-        </motion.button>
-
-        {/* Scroll Buffer */}
-        <div className={styles.scrollBuffer}></div>
-      </motion.div>
+              {/* Global styles for dots and animations */}
+              <style jsx global>{`
+                ::placeholder {
+                  color: rgba(148, 163, 184, 0.6);
+                }
+                
+                input:focus::placeholder {
+                  color: rgba(148, 163, 184, 0.4);
+                }
+ 
+                @media (max-width: 640px) {
+                  .responsive-form-container {
+                    flex-direction: column !important;
+                  }
+                }
+ 
+                /* Interactive elements cursor override */
+                @media (min-width: 1024px) {
+                  input, button {
+                    cursor: pointer !important;
+                  }
+                }
+                
+                @media (max-width: 1023px) {
+                  input, button {
+                    cursor: default !important;
+                  }
+                }
+              `}</style>
+      </div>
     </>
   )
 }
+
+
+
