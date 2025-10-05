@@ -8,32 +8,32 @@ const sora = Sora({
 });
 
 export const metadata: Metadata = {
-  title: "SmartWallet - Secure Crypto Management Made Simple",
-  description: "Advanced security, cross-platform access, and seamless digital asset management. Take control of your crypto journey with cutting-edge technology.",
+  title: "Defy",
+  description: "The smart AI scheduler that schedules around your personal capacity, mood and energy.",
   keywords: "crypto wallet, blockchain, digital assets, cryptocurrency, security, NFT, DeFi, cross-chain",
-  authors: [{ name: "SmartWallet Team" }],
-  creator: "SmartWallet",
-  publisher: "SmartWallet Inc.",
+  authors: [{ name: "Defy Team" }],
+  creator: "Defy",
+  publisher: "Defy Inc.",
   formatDetection: {
     email: false,
     address: false,
     telephone: false,
   },
-  metadataBase: new URL('https://smartwallet.app'),
+  metadataBase: new URL('https://defy.app'),
   alternates: {
     canonical: '/',
   },
   openGraph: {
-    title: "SmartWallet - Secure Crypto Management Made Simple",
-    description: "Advanced security, cross-platform access, and seamless digital asset management. Take control of your crypto journey with cutting-edge technology.",
-    url: 'https://smartwallet.app',
-    siteName: 'SmartWallet',
+    title: "Defy - The smart AI scheduler that schedules around your personal capacity, mood and energy.",
+    description: "The smart AI scheduler that schedules around your personal capacity, mood and energy.",
+    url: 'https://defy.app',
+    siteName: 'Defy',
     images: [
       {
         url: '/og-image.jpg',
         width: 1200,
         height: 630,
-        alt: 'SmartWallet - Secure Crypto Management',
+        alt: 'Defy - The smart AI scheduler that schedules around your personal capacity, mood and energy.',
       },
     ],
     locale: 'en_US',
@@ -41,10 +41,10 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: "SmartWallet - Secure Crypto Management Made Simple",
-    description: "Advanced security, cross-platform access, and seamless digital asset management.",
+    title: "Defy - The smart AI scheduler that schedules around your personal capacity, mood and energy.",
+    description: "The smart AI scheduler that schedules around your personal capacity, mood and energy.",
     images: ['/og-image.jpg'],
-    creator: '@smartwallet',
+    creator: '@defy',
   },
   robots: {
     index: true,
